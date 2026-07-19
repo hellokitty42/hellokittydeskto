@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>RetroMail</title>
+
+<style>
+*{box-sizing:border-box}
+html,body{
+margin:0;
+height:100%;
+font-family:"Courier New",monospace;
+background:#808080;
+overflow:hidden;
+}
+
+#app{
+display:flex;
+flex-direction:column;
+height:100vh;
+border:3px solid #000;
+background:#c0c0c0;
+}
+
+#titlebar{
+background:#800000;
+color:#fff;
+padding:8px;
+font-weight:bold;
+}
+
+#toolbar{
+background:#d4d0c8;
+padding:6px;
+border-bottom:2px solid #666;
+}
+
+#toolbar button{
+font-family:inherit;
+margin-right:5px;
+cursor:pointer;
+}
+
+#main{
+flex:1;
+display:flex;
+overflow:hidden;
+}
+
+#sidebar{
+width:180px;
+background:#d4d0c8;
+padding:10px;
+border-right:2px solid #666;
+}
+
+.folder{padding:6px;cursor:pointer}
+.folder:hover{background:#eee}
+.folder.active{background:#bbb;font-weight:bold}
+
+#list{
+width:320px;
+background:#111;
+color:#fff;
+overflow:auto;
+}
+
+.email{
+padding:10px;
+border-bottom:1px solid #800000;
+cursor:pointer;
+}
+
+.email:hover{background:#222}
+.email.active{background:#333}
+
+.sender{color:#f7e6a1;font-weight:bold}
+.subject{font-size:0.9em}
+.time{font-size:0.8em;color:#aaa}
+
+#reader{
+flex:1;
+background:#fff;
+padding:15px;
+overflow:auto;
+}
+
+.placeholder{
+color:#999;
+font-size:0.9em;
+}
+
+.meta{
+border-bottom:2px solid #ccc;
+margin-bottom:10px;
+padding-bottom:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="app">
+
+<div id="titlebar">VMail v1.0 — hellokitty42@voxtek.net</div>
+
+<div id="toolbar">
+<button onclick="compose()">New</button>
+<button onclick="reply()">Reply</button>
+<button onclick="forward()">Forward</button>
+<button onclick="removeMail()">Delete</button>
+<button onclick="markSpam()">Spam</button>
+<button onclick="render()">Refresh</button>
+</div>
+
+<div id="main">
+
+<div id="sidebar">
+<div class="folder active" onclick="setFolder('Inbox')">Inbox</div>
+<div class="folder" onclick="setFolder('Sent')">Sent</div>
+<div class="folder" onclick="setFolder('Drafts')">Drafts</div>
+<div class="folder" onclick="setFolder('Spam')">Spam</div>
+<div class="folder" onclick="setFolder('Trash')">Trash</div>
+</div>
+
+<div id="list"></div>
+
+<div id="reader">
+<div class="meta" id="meta"></div>
+<div id="body"></div>
+</div>
+
+</div>
+</div>
+
+<script>
+
+/* =========================
+   BACKEND STATE
+========================= */
+
+const state = {
+folder: "Inbox",
+selectedId: null,
+
+emails: [
+{
+id: 1,
+folder: "Inbox",
+from: "vox@rvoxtek.net",
+to: "hellokitty42@voxtek.net",
+time: "01/12/1987",
+subject: "Vox says hello",
+body: "message 1 content"
+},
+{
+id: 2,
+folder: "Inbox",
+from: "vox@rvoxtek.net",
+to: "hellokitty42@voxtek.net",
+time: "02",
+subject: "System Notice",
+body: "message 2 content"
+},
+{
+id: 3,
+folder: "Inbox",
+from: "placeholder@voxtek.net",
+to: "hellokitty42@voxtek.net",
+time: "03",
+subject: "Placeholder Mail",
+body: "message 3 content"
+},
+{
+id: 4,
+folder: "Inbox",
+from: "placeholder@voxtek.net",
+to: "hellokitty42@voxtek.net",
+time: "04",
+subject: "Placeholder Mail",
+body: "message 4 content"
+},
+{
+id: 5,
+folder: "Inbox",
+from: "placeholder@voxtek.net",
+to: "hellokitty42@voxtek.net",
+time: "05",
+subject: "Placeholder Mail",
+body: "message 5 content"
+},
+{
+id: 6,
+folder: "Drafts",
+from: "hellokitty42@voxtek.net",
+to: "angelbaby@voxtek.net",
+time: "03/14/2004",
+subject: "Draft Message",
+body: "Angel Dust,"
+},
+{
+id: 7,
+folder: "Spam",
+from: "girls@naughtykitty.net",
+to: "hellokitty42@voxtek.net",
+time: "04/24/2000",
+subject: "You have 40+ new messages",
+body: "Copypasta here"
+},
+{
+id: 8,
+folder: "Sent",
+from: "hellokitty42@voxtek.net",
+to: "placeholder@voxtek.net",
+time: "00/00/0000",
+subject: "Sent Message 1",
+body: "placeholder"
+},
+{
+id: 9,
+folder: "Sent",
+from: "hellokitty42@voxtek.net",
+to: "placeholder@voxtek.net",
+time: "00/00/2000",
+subject: "Sent Message 2",
+body: "Placeholder"
+},
+{
+id: 10,
+folder: "Sent",
+from: "hellokitty42@voxtek.net",
+to: "placeholder@voxtek.net",
+time: "00/00/2000",
+subject: "Sent Message 3",
+body: "placeholder"
+}
+]
+};
+
+/* =========================
+   HELPERS
+========================= */
+
+function visibleEmails(){
+return state.emails.filter(e => e.folder === state.folder);
+}
+
+function setFolder(f){
+state.folder = f;
+state.selectedId = null;
+
+document.querySelectorAll(".folder").forEach(el=>{
+el.classList.toggle("active", el.textContent.trim() === f);
+});
+
+render();
+}
+
+/* =========================
+   RENDER LIST
+========================= */
+
+function renderList(){
+const list = document.getElementById("list");
+list.innerHTML = "";
+
+const items = visibleEmails();
+
+items.forEach((e)=>{
+
+const div = document.createElement("div");
+div.className = "email" + (state.selectedId === e.id ? " active" : "");
+
+div.onclick = () => {
+state.selectedId = e.id;
+render();
+};
+
+div.innerHTML = `
+<div class="sender">${e.from}</div>
+<div class="subject">${e.subject}</div>
+<div class="time">${e.time}</div>
+`;
+
+list.appendChild(div);
+});
+}
+
+/* =========================
+   RENDER READER
+========================= */
+
+function renderReader(){
+const e = state.emails.find(m => m.id === state.selectedId);
+
+const meta = document.getElementById("meta");
+const body = document.getElementById("body");
+
+if(!e){
+meta.innerHTML = `<span class="placeholder">No message selected</span>`;
+body.textContent = "";
+return;
+}
+
+meta.innerHTML = `
+<div><b>From:</b> ${e.from}</div>
+<div><b>To:</b> ${e.to}</div>
+<div><b>Subject:</b> ${e.subject}</div>
+<div><b>Date:</b> ${e.time}</div>
+`;
+
+body.textContent = e.body;
+}
+
+/* =========================
+   MASTER RENDER
+========================= */
+
+function render(){
+renderList();
+renderReader();
+}
+
+/* =========================
+   ACTIONS
+========================= */
+
+function compose(){
+const newId = Date.now();
+
+state.emails.push({
+id: newId,
+folder: "Drafts",
+from: "hellokitty42@voxtek.net",
+to: "(unset)",
+time: "NEW",
+subject: "New Draft",
+body: "Type message here..."
+});
+
+setFolder("Drafts");
+state.selectedId = newId;
+render();
+}
+
+function removeMail(){
+const e = state.emails.find(m => m.id === state.selectedId);
+if(!e) return;
+e.folder = "Trash";
+render();
+}
+
+function markSpam(){
+const e = state.emails.find(m => m.id === state.selectedId);
+if(!e) return;
+e.folder = "Spam";
+render();
+}
+
+function reply(){
+const e = state.emails.find(m => m.id === state.selectedId);
+if(!e) return;
+
+const newId = Date.now();
+
+state.emails.push({
+id: newId,
+folder: "Drafts",
+from: "hellokitty42@voxtek.net",
+to: e.from,
+time: "RE",
+subject: "Re: " + e.subject,
+body: ""
+});
+
+setFolder("Drafts");
+state.selectedId = newId;
+render();
+}
+
+function forward(){
+const e = state.emails.find(m => m.id === state.selectedId);
+if(!e) return;
+
+const newId = Date.now();
+
+state.emails.push({
+id: newId,
+folder: "Drafts",
+from: "hellokitty42@voxtek.net",
+to: "(unset)",
+time: "FW",
+subject: "Fwd: " + e.subject,
+body: e.body
+});
+
+setFolder("Drafts");
+state.selectedId = newId;
+render();
+}
+
+/* INIT */
+render();
+
+</script>
+
+</body>
+</html>
