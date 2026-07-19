@@ -5,126 +5,104 @@
 <title>RetroMail</title>
 
 <style>
-* {
-    box-sizing: border-box;
+*{box-sizing:border-box}
+
+html,body{
+margin:0;
+height:100%;
+font-family:"Courier New",monospace;
+background:#808080;
 }
 
-html, body {
-    margin: 0;
-    height: 100%;
-    font-family: "Courier New", monospace;
-    background-image: url("../desktopbg.png");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    overflow: hidden;
+#app{
+display:flex;
+flex-direction:column;
+height:100vh;
+border:3px solid #000;
+background:#c0c0c0;
+overflow:hidden;
 }
 
-#app {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    border: 3px solid #000;
-    background: rgba(192,192,192,0.95);
+#titlebar{
+background:#800000;
+color:#fff;
+padding:8px;
+font-weight:bold;
+flex-shrink:0;
 }
 
-#titlebar {
-    background: #800000;
-    color: #fff;
-    padding: 8px;
-    font-weight: bold;
+#toolbar{
+background:#d4d0c8;
+padding:6px;
+border-bottom:2px solid #666;
+flex-shrink:0;
 }
 
-#toolbar {
-    background: #d4d0c8;
-    padding: 6px;
-    border-bottom: 2px solid #666;
+#toolbar button{
+font-family:inherit;
+margin-right:5px;
+cursor:pointer;
 }
 
-#toolbar button {
-    font-family: inherit;
-    margin-right: 5px;
-    cursor: pointer;
+#main{
+flex:1;
+display:flex;
+overflow:hidden;
+min-height:0;
 }
 
-#main {
-    flex: 1;
-    display: flex;
-    overflow: hidden;
+#sidebar{
+width:180px;
+background:#d4d0c8;
+padding:10px;
+border-right:2px solid #666;
+flex-shrink:0;
+overflow:auto;
 }
 
-#sidebar {
-    width: 180px;
-    background: #d4d0c8;
-    padding: 10px;
-    border-right: 2px solid #666;
+.folder{padding:6px;cursor:pointer}
+.folder:hover{background:#eee}
+.folder.active{background:#bbb;font-weight:bold}
+
+#list{
+width:320px;
+background:#111;
+color:#fff;
+overflow:auto;
+flex-shrink:0;
+min-width:0;
 }
 
-.folder {
-    padding: 6px;
-    cursor: pointer;
+.email{
+padding:10px;
+border-bottom:1px solid #800000;
+cursor:pointer;
 }
 
-.folder:hover {
-    background: #eee;
+.email:hover{background:#222}
+.email.active{background:#333}
+
+.sender{color:#f7e6a1;font-weight:bold}
+.subject{font-size:0.9em}
+.time{font-size:0.8em;color:#aaa}
+
+#reader{
+flex:1;
+background:#fff;
+padding:15px;
+overflow:auto;
+min-width:0;
 }
 
-.folder.active {
-    background: #bbb;
-    font-weight: bold;
+.placeholder{
+color:#999;
+font-size:0.9em;
 }
 
-#list {
-    width: 320px;
-    background: #111;
-    color: #fff;
-    overflow: auto;
-}
-
-.email {
-    padding: 10px;
-    border-bottom: 1px solid #800000;
-    cursor: pointer;
-}
-
-.email:hover {
-    background: #222;
-}
-
-.email.active {
-    background: #333;
-}
-
-.sender {
-    color: #f7e6a1;
-    font-weight: bold;
-}
-
-.subject {
-    font-size: 0.9em;
-}
-
-.time {
-    font-size: 0.8em;
-    color: #aaa;
-}
-
-#reader {
-    flex: 1;
-    background: #fff;
-    padding: 15px;
-    overflow: auto;
-}
-
-.placeholder {
-    color: #999;
-    font-size: 0.9em;
-}
-
-.meta {
-    border-bottom: 2px solid #ccc;
-    margin-bottom: 10px;
-    padding-bottom: 10px;
+.meta{
+border-bottom:2px solid #ccc;
+margin-bottom:10px;
+padding-bottom:10px;
 }
 </style>
 </head>
@@ -165,13 +143,11 @@ html, body {
 </div>
 
 <script>
-
 const state = {
 folder: "Inbox",
 selectedId: null,
 
 emails: [
-```
 {
 id: 1,
 folder: "Inbox",
@@ -181,27 +157,8 @@ time: "01/12/1987",
 subject: "New Email",
 body: `Hey Kitty Cat,
 
-Here's to your first email with our new Voxtek domains, yours was especially chosen for you <3. Now, old man, I know this whole new-age technological bullshit isn't exactly your deal, but truthfully? I don't care :)
-
-Try to answer your emails in a timely manner, with a professional tone. You're a face of this company as well so act like it, or I'll come down there and fix you up myself. This isn't some throwaway opportunity Husker, become someone again or stay a nobody; This is your last chance that Vox will give you, so don't fuck it up.
-
-Incase you need their addresses for communication:
-
-Vox - vox@voxtek.net
-Valentino - hotbabe69@voxtek.net
-Ethan - eth367@voxtek.net
-Melissa - mel353@voxtek.net
-Angel - angelbaby@voxtek.net
-
-Use them wisely.
-
-Now, put down the bottle and GET TO WORK.
-
-Kisses darling XOXO
-
-Velvette`
+Here's to your first email with our new Voxtek domains...`
 },
-
 {
 id: 2,
 folder: "Inbox",
@@ -211,7 +168,6 @@ time: "02",
 subject: "System Notice",
 body: "message 2 content"
 },
-
 {
 id: 3,
 folder: "Inbox",
@@ -221,7 +177,6 @@ time: "03",
 subject: "Placeholder Mail",
 body: "message 3 content"
 },
-
 {
 id: 4,
 folder: "Inbox",
@@ -231,7 +186,6 @@ time: "04",
 subject: "Placeholder Mail",
 body: "message 4 content"
 },
-
 {
 id: 5,
 folder: "Inbox",
@@ -241,7 +195,6 @@ time: "05",
 subject: "Placeholder Mail",
 body: "message 5 content"
 },
-
 {
 id: 6,
 folder: "Drafts",
@@ -251,7 +204,6 @@ time: "03/14/2004",
 subject: "Draft Message",
 body: "Angel Dust,"
 },
-
 {
 id: 7,
 folder: "Spam",
@@ -261,7 +213,6 @@ time: "04/24/2000",
 subject: "You have 40+ new messages",
 body: "Copypasta here"
 },
-
 {
 id: 8,
 folder: "Sent",
@@ -271,7 +222,6 @@ time: "00/00/0000",
 subject: "Sent Message 1",
 body: "placeholder"
 },
-
 {
 id: 9,
 folder: "Sent",
@@ -281,7 +231,6 @@ time: "00/00/2000",
 subject: "Sent Message 2",
 body: "Placeholder"
 },
-
 {
 id: 10,
 folder: "Sent",
@@ -291,285 +240,149 @@ time: "00/00/2000",
 subject: "Sent Message 3",
 body: "placeholder"
 }
-
 ]
-
 };
-function visibleEmails(){
-    return state.emails.filter(e => e.folder === state.folder);
-}
 
+function visibleEmails(){
+return state.emails.filter(e => e.folder === state.folder);
+}
 
 function setFolder(f){
-
-    state.folder = f;
-    state.selectedId = null;
-
-    document.querySelectorAll(".folder").forEach(el => {
-        el.classList.toggle("active", el.textContent.trim() === f);
-    });
-
-    render();
-}
-
-
-/* =========================
-   RENDER LIST
-========================= */
-
-function renderList(){
-
-    const list = document.getElementById("list");
-
-    list.innerHTML = "";
-
-    const items = visibleEmails();
-
-    items.forEach((e)=>{
-
-        const div = document.createElement("div");
-
-        div.className = "email" + 
-            (state.selectedId === e.id ? " active" : "");
-
-
-        div.onclick = () => {
-
-            state.selectedId = e.id;
-
-            render();
-
-        };
-
-
-        div.innerHTML = `
-
-            <div class="sender">${e.from}</div>
-
-            <div class="subject">${e.subject}</div>
-
-            <div class="time">${e.time}</div>
-
-        `;
-
-
-        list.appendChild(div);
-
-    });
-
-}
-
-
-/* =========================
-   RENDER READER
-========================= */
-
-function renderReader(){
-
-    const e = state.emails.find(m => m.id === state.selectedId);
-
-
-    const meta = document.getElementById("meta");
-
-    const body = document.getElementById("body");
-
-
-    if(!e){
-
-        meta.innerHTML = 
-        `<span class="placeholder">No message selected</span>`;
-
-        body.textContent = "";
-
-        return;
-
-    }
-
-
-    meta.innerHTML = `
-
-        <div><b>From:</b> ${e.from}</div>
-
-        <div><b>To:</b> ${e.to}</div>
-
-        <div><b>Subject:</b> ${e.subject}</div>
-
-        <div><b>Date:</b> ${e.time}</div>
-
-    `;
-
-
-    body.textContent = e.body;
-
-}
-
-
-
-/* =========================
-   MASTER RENDER
-========================= */
-
-function render(){
-
-    renderList();
-
-    renderReader();
-
-}
-
-
-
-/* =========================
-   ACTIONS
-========================= */
-
-function compose(){
-
-    const newId = Date.now();
-
-
-    state.emails.push({
-
-        id:newId,
-
-        folder:"Drafts",
-
-        from:"hellokitty42@voxtek.net",
-
-        to:"(unset)",
-
-        time:"NEW",
-
-        subject:"New Draft",
-
-        body:"Type message here..."
-
-    });
-
-
-    setFolder("Drafts");
-
-    state.selectedId = newId;
-
-    render();
-
-}
-
-
-
-function removeMail(){
-
-    const e = state.emails.find(m => m.id === state.selectedId);
-
-    if(!e) return;
-
-
-    e.folder = "Trash";
-
-    render();
-
-}
-
-
-
-function markSpam(){
-
-    const e = state.emails.find(m => m.id === state.selectedId);
-
-    if(!e) return;
-
-
-    e.folder = "Spam";
-
-    render();
-
-}
-
-
-
-function reply(){
-
-    const e = state.emails.find(m => m.id === state.selectedId);
-
-    if(!e) return;
-
-
-    const newId = Date.now();
-
-
-    state.emails.push({
-
-        id:newId,
-
-        folder:"Drafts",
-
-        from:"hellokitty42@voxtek.net",
-
-        to:e.from,
-
-        time:"RE",
-
-        subject:"Re: " + e.subject,
-
-        body:""
-
-    });
-
-
-    setFolder("Drafts");
-
-    state.selectedId = newId;
-
-    render();
-
-}
-
-
-
-function forward(){
-
-    const e = state.emails.find(m => m.id === state.selectedId);
-
-    if(!e) return;
-
-
-    const newId = Date.now();
-
-
-    state.emails.push({
-
-        id:newId,
-
-        folder:"Drafts",
-
-        from:"hellokitty42@voxtek.net",
-
-        to:"(unset)",
-
-        time:"FW",
-
-        subject:"Fwd: " + e.subject,
-
-        body:e.body
-
-    });
-
-
-    setFolder("Drafts");
-
-    state.selectedId = newId;
-
-    render();
-
-}
-
-
-
-/* INIT */
+state.folder = f;
+state.selectedId = null;
+
+document.querySelectorAll(".folder").forEach(el=>{
+el.classList.toggle("active", el.textContent.trim() === f);
+});
 
 render();
+}
 
+function renderList(){
+const list = document.getElementById("list");
+list.innerHTML = "";
 
+visibleEmails().forEach(e=>{
+const div = document.createElement("div");
+div.className = "email" + (state.selectedId === e.id ? " active" : "");
+
+div.onclick = () => {
+state.selectedId = e.id;
+render();
+};
+
+div.innerHTML = `
+<div class="sender">${e.from}</div>
+<div class="subject">${e.subject}</div>
+<div class="time">${e.time}</div>
+`;
+
+list.appendChild(div);
+});
+}
+
+function renderReader(){
+const e = state.emails.find(m => m.id === state.selectedId);
+
+const meta = document.getElementById("meta");
+const body = document.getElementById("body");
+
+if(!e){
+meta.innerHTML = `<span class="placeholder">No message selected</span>`;
+body.textContent = "";
+return;
+}
+
+meta.innerHTML = `
+<div><b>From:</b> ${e.from}</div>
+<div><b>To:</b> ${e.to}</div>
+<div><b>Subject:</b> ${e.subject}</div>
+<div><b>Date:</b> ${e.time}</div>
+`;
+
+body.innerText = e.body;
+}
+
+function render(){
+renderList();
+renderReader();
+}
+
+function compose(){
+const newId = Date.now();
+
+state.emails.push({
+id: newId,
+folder: "Drafts",
+from: "hellokitty42@voxtek.net",
+to: "(unset)",
+time: "NEW",
+subject: "New Draft",
+body: "Type message here..."
+});
+
+setFolder("Drafts");
+state.selectedId = newId;
+render();
+}
+
+function removeMail(){
+const e = state.emails.find(m => m.id === state.selectedId);
+if(!e) return;
+e.folder = "Trash";
+render();
+}
+
+function markSpam(){
+const e = state.emails.find(m => m.id === state.selectedId);
+if(!e) return;
+e.folder = "Spam";
+render();
+}
+
+function reply(){
+const e = state.emails.find(m => m.id === state.selectedId);
+if(!e) return;
+
+const newId = Date.now();
+
+state.emails.push({
+id: newId,
+folder: "Drafts",
+from: "hellokitty42@voxtek.net",
+to: e.from,
+time: "RE",
+subject: "Re: " + e.subject,
+body: ""
+});
+
+setFolder("Drafts");
+state.selectedId = newId;
+render();
+}
+
+function forward(){
+const e = state.emails.find(m => m.id === state.selectedId);
+if(!e) return;
+
+const newId = Date.now();
+
+state.emails.push({
+id: newId,
+folder: "Drafts",
+from: "hellokitty42@voxtek.net",
+to: "(unset)",
+time: "FW",
+subject: "Fwd: " + e.subject,
+body: e.body
+});
+
+setFolder("Drafts");
+state.selectedId = newId;
+render();
+}
+
+render();
 </script>
 
 </body>
