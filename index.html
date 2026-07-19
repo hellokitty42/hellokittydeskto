@@ -1,98 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hello Kitty Desktop</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello Kitty Desktop</title>
 
-<style>
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-body, html {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    font-family: sans-serif;
-}
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: Arial, Helvetica, sans-serif;
+        }
 
-/* Desktop Background */
-.desktop {
-    width: 100%;
-    height: 100%;
-    background-image: url('desktopbg.png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    padding: 20px;
-}
+        /* Desktop Background */
+        .desktop {
+            width: 100%;
+            height: 100%;
+            background-image: url("desktopbg.png");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: flex-start;
+            padding: 25px;
+        }
 
-/* Icon Grid Layout - Left Aligned Column */
-.icon-column {
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-    align-items: flex-start;
-    width: max-content;
-    height: 100%;
-}
+        /* Left-side icon column */
+        .icon-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
 
-/* Clickable Icon Button Styles */
-.icon-button {
-    display: inline-block;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 5px;
-    transition: transform 0.1s ease;
-    text-decoration: none;
-}
+        /* Desktop icons */
+        .icon-button {
+            display: inline-block;
+            text-decoration: none;
+            transition: transform 0.15s ease;
+        }
 
-.icon-button:hover {
-    transform: scale(1.05);
-}
+        .icon-button:hover {
+            transform: scale(1.08);
+        }
 
-.icon-button:active {
-    transform: scale(0.95);
-}
+        .icon-button:active {
+            transform: scale(0.95);
+        }
 
-.icon-button img {
-    display: block;
-    width: 80px;
-    height: auto;
-}
-</style>
+        .icon-button img {
+            width: 80px;
+            height: auto;
+            display: block;
+        }
+    </style>
 </head>
 
 <body>
 
 <div class="desktop">
+
     <div class="icon-column">
 
         <!-- Solitaire -->
-        <a href="solitaire.html" class="icon-button">
+        <a href="html/solitaire.html" class="icon-button">
             <img src="icons/solitaireicon.png" alt="Solitaire">
         </a>
 
         <!-- VoxChat -->
-        <a href="voxchat.html" class="icon-button">
+        <a href="html/voxchat.html" class="icon-button">
             <img src="icons/voxchaticon.png" alt="VoxChat">
         </a>
 
         <!-- Photos -->
-        <a href="photos.html" class="icon-button">
+        <a href="html/photos.html" class="icon-button">
             <img src="icons/photosicon.png" alt="Photos">
         </a>
 
         <!-- Email -->
-        <a href="email.html" class="icon-button">
+        <a href="html/email.html" class="icon-button">
             <img src="icons/emailicon.png" alt="Email">
         </a>
 
     </div>
+
 </div>
 
 </body>
