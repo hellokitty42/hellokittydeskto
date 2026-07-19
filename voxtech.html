@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>VOXCHAT ARCHIVE</title>
+
+<style>
+body {
+  margin: 0;
+  background: transparent;
+  font-family: "Courier New", Courier, monospace;
+}
+
+/* Layout */
+#container {
+  display: flex;
+  width: 900px;
+  margin: 20px auto;
+  border: 5px outset #fff;
+  background: #000;
+}
+
+/* Sidebar */
+#sidebar {
+  width: 220px;
+  background: #111;
+  border-right: 3px inset #800000;
+  padding: 10px;
+  color: #f7e6a1;
+}
+
+#sidebar h3 {
+  text-align: center;
+  margin-top: 0;
+}
+
+button {
+  width: 100%;
+  margin: 5px 0;
+  padding: 6px;
+  font-family: inherit;
+  cursor: pointer;
+  border: 2px outset #fff;
+  background: #800000;
+  color: #fff;
+}
+
+button:hover {
+  background: #a00000;
+}
+
+/* Main */
+#chat-window {
+  flex: 1;
+  padding: 10px;
+}
+
+h2 {
+  color: #f7e6a1;
+  text-align: center;
+  margin-top: 0;
+}
+
+/* Chat log */
+#chatLog {
+  background: #fff;
+  height: 300px;
+  overflow-y: auto;
+  border: 3px inset #800000;
+  padding: 10px;
+}
+
+.message {
+  margin-bottom: 8px;
+}
+
+.timestamp {
+  color: #666;
+  font-size: 0.8em;
+}
+
+.user {
+  color: #800000;
+  font-weight: bold;
+}
+
+/* Input */
+.input-area {
+  display: flex;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+input {
+  flex: 1;
+  padding: 5px;
+  border: 2px inset #fff;
+}
+
+/* SMALL SEND BUTTON */
+button.send {
+  width: 70px;
+  padding: 4px;
+  font-size: 12px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="container">
+
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <h3>ARCHIVES</h3>
+
+    <button onclick="newChat()">+ NEW CHAT</button>
+    <button onclick="loadChat('2003-01-14')">2003-01-14</button>
+    <button onclick="loadChat('2014-01-15')">2014-01-15</button>
+    <button onclick="loadChat('2009-01-16')">2009-01-16</button>
+  </div>
+
+  <!-- Main -->
+  <div id="chat-window">
+    <h2>:: VOXCHAT ::</h2>
+
+    <div id="chatLog"></div>
+
+    <div class="input-area">
+      <input id="msgInput" placeholder="Message..." />
+      <button class="send" onclick="sendMessage()">SEND</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const chats = {
+  "2003-01-14": [
+    ["14:02", "Vox", "placeholder"],
+    ["14:05", "Valentino", "placeholder"],
+    ["14:10", "Velvette", "placeholder"]
+  ],
+  "2014-01-15": [
+    ["09:12", "Velvette", "placeholder"],
+    ["09:15", "Hellokitty42", "placeholder"]
+  ],
+  "2009-01-16": [
+    ["22:41", "Angelbaby", "placeholder"],
+    ["22:46", "Hellokitty42", "placeholder"]
+  ]
+};
+
+let mode = "archive";
+
+/* Render archive */
+function render(lines) {
+  const log = document.getElementById("chatLog");
+  log.innerHTML = "";
+
+  lines.forEach(([time, user, msg]) => {
+    const div = document.createElement("div");
+    div.className = "message";
+    div.innerHTML = `
+      <span class="timestamp">[${time}]</span>
+      <span class="user">${user}:</span> ${msg}
+    `;
+    log.appendChild(div);
+  });
+}
+
+/* Load archive */
+function loadChat(date) {
+  mode = "archive";
+
+  if (!chats[date]) {
+    document.getElementById("chatLog").innerHTML =
+      `<div class="message"><span class="user">SYSTEM:</span> archive missing</div>`;
+    return;
+  }
+
+  render(chats[date]);
+}
+
+/* New chat (NO storage, just live session) */
+function newChat() {
+  mode = "void";
+
+  document.getElementById("chatLog").innerHTML =
+    `<div class="message"><span class="user">SYSTEM:</span> live session started</div>`;
+}
+
+/* Send message (SESSION ONLY - NOT SAVED ANYWHERE) */
+function sendMessage() {
+  const input = document.getElementById("msgInput");
+  const text = input.value.trim();
+  if (!text) return;
+
+  const log = document.getElementById("chatLog");
+
+  const now = new Date();
+  const time =
+    String(now.getHours()).padStart(2, "0") +
+    ":" +
+    String(now.getMinutes()).padStart(2, "0");
+
+  const div = document.createElement("div");
+  div.className = "message";
+
+  if (mode === "archive") {
+    div.innerHTML = `<span class="user">SYSTEM:</span> read-only archive`;
+  } else {
+    div.innerHTML = `
+      <span class="timestamp">[${time}]</span>
+      <span class="user">Hellokitty42:</span> ${text}
+    `;
+
+    log.appendChild(div);
+    input.value = "";
+    return;
+  }
+
+  log.appendChild(div);
+  input.value = "";
+}
+</script>
+
+</body>
+</html>
